@@ -52,6 +52,22 @@ class CartViewSet(viewsets.ViewSet):
 
         return Response({"message": "Item added to cart"}, status=201)
 
+    def partial_update(self, request, pk=None):
+        cart_item = get_object_or_404(CartItem, id=pk, cart__user=request.user)
+
+        quantity = request.data.get("quantity")
+
+        if quantity is not None:
+            cart_item.quantity = quantity
+            cart_item.save()
+
+        return Response({"message": "Quantity updated"})
+
+    def destroy(self, request, pk=None):
+        cart_item = get_object_or_404(CartItem, id=pk, cart__user=request.user)
+        cart_item.delete()
+        return Response({"message": "Item removed from cart"}, status=204)
+
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
